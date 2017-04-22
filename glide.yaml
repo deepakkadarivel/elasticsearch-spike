@@ -1,0 +1,7 @@
+package: elasticsearch-spike
+import:
+- package: github.com/stretchr/testify
+  subpackages:
+  - assert
+  - require
+- package: gopkg.in/olivere/elastic.v5
