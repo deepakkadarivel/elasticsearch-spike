@@ -1,0 +1,22 @@
+<component name="libraryTable">
+  <library name="GOPATH &lt;elasticsearch-spike&gt;">
+    <CLASSES>
+      <root url="file://$USER_HOME$/mck/src/git.periscope-solutions.com" />
+      <root url="file://$USER_HOME$/mck/src/github.com" />
+      <root url="file://$USER_HOME$/mck/src/golang.org" />
+      <root url="file://$USER_HOME$/mck/src/gopkg.in" />
+      <root url="file://$USER_HOME$/mck/src/bitbucket.org" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$USER_HOME$/mck/src/git.periscope-solutions.com" />
+      <root url="file://$USER_HOME$/mck/src/github.com" />
+      <root url="file://$USER_HOME$/mck/src/golang.org" />
+      <root url="file://$USER_HOME$/mck/src/gopkg.in" />
+      <root url="file://$USER_HOME$/mck/src/bitbucket.org" />
+    </SOURCES>
+    <excluded>
+      <root url="file://$PROJECT_DIR$" />
+    </excluded>
+  </library>
+</component>
