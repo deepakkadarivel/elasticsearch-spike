@@ -1,0 +1,11 @@
+{
+  "mapping": {
+    "log": {
+      "properties": {
+        "app" : {"type": "string"},
+        "message": {"type": "string"},
+        "time": {"time": "date"}
+      }
+    }
+  }
+}
