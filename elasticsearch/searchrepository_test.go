@@ -28,8 +28,10 @@ func TestDeleteIndex(t *testing.T) {
 
 func TestSearchAllLogsFromIndex(t *testing.T) {
 	esClient := NewElasticSearchClient(config.ElasticSearchBaseURL)
-	err := SearchAllLogsFromIndex(esClient)
+	logs, err := SearchAllLogsFromIndex(esClient)
 	assert.Nil(t, err)
+	fmt.Println(logs)
+	assert.NotNil(t, logs)
 }
 
 func logsArray() []Log {
