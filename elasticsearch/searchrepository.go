@@ -5,6 +5,7 @@ import (
 	"elasticsearch-spike/config"
 	"errors"
 	es "gopkg.in/olivere/elastic.v5"
+	"encoding/json"
 )
 
 type Log map[string]interface{}
@@ -41,7 +42,6 @@ func setClient(client *es.Client) error {
 			return err
 		}
 	}
-
 	return nil
 }
 
@@ -56,7 +56,6 @@ func AddLogToIndex(client *es.Client, log Log) error {
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -83,7 +82,26 @@ func AddBulkLogsToIndex(client *es.Client, logs []Log) error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
 
+func SearchAllLogsFromIndex(client *es.Client) error {
+	searchResult, err := client.Search().Index(config.IndexName).Type(config.IndexType).Do(context.TODO())
+	if err != nil {
+		return err
+	}
+
+	if searchResult.Hits.TotalHits > 0 {
+		for _, hit := range searchResult.Hits.Hits {
+			var log Log
+			err := json.Unmarshal(*hit.Source, &log)
+			if err != nil {
+				return err
+			}
+		}
+	} else {
+		return errors.New("Serch results returned 0 hits.")
+	}
 	return nil
 }
 
