@@ -1,10 +1,10 @@
 package elasticsearch
 
 import (
-	es "gopkg.in/olivere/elastic.v5"
-	"elasticsearch-spike/config"
 	"context"
+	"elasticsearch-spike/config"
 	"errors"
+	es "gopkg.in/olivere/elastic.v5"
 )
 
 type Log map[string]interface{}
@@ -47,5 +47,16 @@ func AddLogToIndex(client *es.Client, log Log) error {
 		return err
 	}
 
+	return nil
+}
+
+func DeleteIndex(client *es.Client) error {
+	deletedIndex, err := client.DeleteIndex(config.IndexName).Do(context.TODO())
+	if err != nil {
+		return err
+	}
+	if !deletedIndex.Acknowledged {
+		return errors.New("Deleted Index " + config.IndexName + " was not acknowledged. Check timeout value.")
+	}
 	return nil
 }
