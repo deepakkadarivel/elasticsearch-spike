@@ -49,3 +49,15 @@ func AddLogToIndex(client *es.Client, log Log) error {
 
 	return nil
 }
+
+func DeleteIndex(client *es.Client) error {
+	deletedIndex, err := client.DeleteIndex(config.IndexName).Do(context.TODO())
+	if err != nil {
+		return err
+	}
+	if !deletedIndex.Acknowledged {
+		return errors.New("Deleted Index " + config.IndexName + " was not acknowledged. Check timeout value.")
+	}
+
+	return nil
+}
