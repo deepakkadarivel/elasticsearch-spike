@@ -14,6 +14,12 @@ func TestAddLogToIndex(t *testing.T) {
 	assert.Nil(t, err)
 }
 
+func TestAddBulkLogsToIndex(t *testing.T) {
+	esClient := NewElasticSearchClient(config.ElasticSearchBaseURL)
+	err := AddBulkLogsToIndex(esClient, logsArray())
+	assert.Nil(t, err)
+}
+
 func TestDeleteIndex(t *testing.T) {
 	esClient := NewElasticSearchClient(config.ElasticSearchBaseURL)
 	err := DeleteIndex(esClient)
