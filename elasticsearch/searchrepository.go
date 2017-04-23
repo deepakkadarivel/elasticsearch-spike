@@ -29,7 +29,7 @@ func createIndex(client *es.Client) error {
 	return nil
 }
 
-func AddLogToIndex(client *es.Client, log Log) error {
+func setClient(client *es.Client) error {
 	exists, err := checkIfIndexAlreadyExists(client)
 	if err != nil {
 		return err
@@ -42,7 +42,44 @@ func AddLogToIndex(client *es.Client, log Log) error {
 		}
 	}
 
+	return nil
+}
+
+func AddLogToIndex(client *es.Client, log Log) error {
+	err := setClient(client)
+
+	if err != nil {
+		return err
+	}
+
 	_, err = client.Index().Index(config.IndexName).Type(config.IndexType).BodyJson(log).Do(context.TODO())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func AddBulkLogsToIndex(client *es.Client, logs []Log) error {
+	err := setClient(client)
+
+	if err != nil {
+		return err
+	}
+
+	processor, err := client.BulkProcessor().Do(context.TODO())
+	if err != nil {
+		return err
+	}
+
+	defer processor.Close()
+
+	for _, log := range logs {
+		request := es.NewBulkIndexRequest().Index(config.IndexName).Type(config.IndexType).Doc(log)
+		processor.Add(request)
+	}
+
+	err = processor.Flush()
 	if err != nil {
 		return err
 	}
