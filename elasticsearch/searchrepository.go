@@ -3,9 +3,9 @@ package elasticsearch
 import (
 	"context"
 	"elasticsearch-spike/config"
+	"encoding/json"
 	"errors"
 	es "gopkg.in/olivere/elastic.v5"
-	"encoding/json"
 )
 
 type Log map[string]interface{}
@@ -85,24 +85,25 @@ func AddBulkLogsToIndex(client *es.Client, logs []Log) error {
 	return nil
 }
 
-func SearchAllLogsFromIndex(client *es.Client) error {
-	searchResult, err := client.Search().Index(config.IndexName).Type(config.IndexType).Do(context.TODO())
+func SearchAllLogsFromIndex(client *es.Client) ([]Log, error) {
+	searchResult, err := client.Search().Index(config.IndexName).Do(context.TODO())
 	if err != nil {
-		return err
+		return nil, err
 	}
-
+	var logs = make([]Log, searchResult.Hits.TotalHits)
 	if searchResult.Hits.TotalHits > 0 {
-		for _, hit := range searchResult.Hits.Hits {
+		for i, hit := range searchResult.Hits.Hits {
 			var log Log
 			err := json.Unmarshal(*hit.Source, &log)
 			if err != nil {
-				return err
+				return nil, err
 			}
+			logs[i] = log
 		}
 	} else {
-		return errors.New("Serch results returned 0 hits.")
+		return nil, errors.New("Serch results returned 0 hits.")
 	}
-	return nil
+	return logs, nil
 }
 
 func DeleteIndex(client *es.Client) error {
