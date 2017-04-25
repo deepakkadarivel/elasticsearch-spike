@@ -86,13 +86,35 @@ func AddBulkLogsToIndex(client *es.Client, logs []Log) error {
 }
 
 func SearchAllLogsFromIndex(client *es.Client) ([]Log, error) {
-	searchResult, err := client.Search().Index(config.IndexName).Do(context.TODO())
+	searchResult, err := client.Search().Index(config.IndexName).Type(config.IndexType).Do(context.TODO())
 	if err != nil {
 		return nil, err
 	}
-	var logs = make([]Log, searchResult.Hits.TotalHits)
-	if searchResult.Hits.TotalHits > 0 {
-		for i, hit := range searchResult.Hits.Hits {
+	logs, err := parseSearchResults(searchResult)
+	if err != nil {
+		return nil, err
+	}
+	return logs, nil
+}
+
+func SearchUsingBoolQuery(client *es.Client, searchName string, searchValue interface{}) ([]Log, error) {
+	query := es.NewBoolQuery()
+	query = query.Must(es.NewTermQuery(searchName, searchValue))
+	searchResult, err := client.Search().Index(config.IndexName).Type(config.IndexType).Query(query).Do(context.TODO())
+	if err != nil {
+		return nil, err
+	}
+	logs, err := parseSearchResults(searchResult)
+	if err != nil {
+		return nil, err
+	}
+	return logs, nil
+}
+
+func parseSearchResults(result *es.SearchResult) ([]Log, error) {
+	var logs = make([]Log, result.Hits.TotalHits)
+	if result.Hits.TotalHits > 0 {
+		for i, hit := range result.Hits.Hits {
 			var log Log
 			err := json.Unmarshal(*hit.Source, &log)
 			if err != nil {
