@@ -33,13 +33,21 @@ func TestSearchAllLogsFromIndex(t *testing.T) {
 	assert.NotNil(t, logs)
 }
 
+func TestSearchUsingBoolQuery(t *testing.T) {
+	esClient := NewElasticSearchClient(config.ElasticSearchBaseURL)
+	logs, err := SearchUsingBoolQuery(esClient, "status", 1)
+	assert.Nil(t, err)
+	assert.NotNil(t, logs)
+}
+
 func logsArray() []Log {
 	logs := make([]Log, 10)
 	for i := 1; i <= 10; i++ {
 		l := Log{
-			"app_name": config.AppName,
-			"message":  fmt.Sprintf("Mesage with Log id : %v", i),
-			"time":     time.Now(),
+			"app":     config.AppName,
+			"message": fmt.Sprintf("Mesage with Log id : %v", i),
+			"time":    time.Now(),
+			"status":  i % 2,
 		}
 		logs[i-1] = l
 	}
